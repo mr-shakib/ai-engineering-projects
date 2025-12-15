@@ -1,4 +1,6 @@
 from src.decision import calculateConfidence, generateRefusalMessage
+from src.llm import generateAnswer as generateLlmAnswer
+
 
 
 def generateAnswer(question, retrievedChunks, similarityScores, threshold=0.4):
@@ -7,21 +9,24 @@ def generateAnswer(question, retrievedChunks, similarityScores, threshold=0.4):
     retrievedChunks: list of text chunks
     similarityScores: distances from FAISS
     """
+
+    # Step 1: Confidence gate (authoritative)
     confident, score = calculateConfidence(similarityScores, threshold)
     if not confident:
         return generateRefusalMessage()
 
-    # Format chunks for better readability
-    formatted_context = ""
+    # Step 2: Prepare context for LLM (controlled)
+    contextChunks = []
     for i, chunk in enumerate(retrievedChunks):
-        formatted_context += f"\n--- Source {i+1} ---\n{chunk.strip()}\n"
+        contextChunks.append({
+            "id": f"Source {i+1}",
+            "text": chunk.strip()
+        })
 
-    # Simulate LLM generation for now
-    answer = (
-        f"### Retrieved Information:\n"
-        f"{formatted_context}\n"
-        f"--------------------------------------------------\n"
-        f"System Note: This is raw context. Connect an LLM to generate a natural language summary."
+    # Step 3: LLM generation (non-authoritative)
+    answer = generateLlmAnswer(
+        contextChunks=contextChunks,
+        question=question
     )
 
     return answer

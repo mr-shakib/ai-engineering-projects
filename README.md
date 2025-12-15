@@ -106,7 +106,7 @@ End-to-end pipeline for fine-tuning large language models:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/ai-engineering-projects.git
+   git clone https://github.com/mr-shakib/ai-engineering-projects.git
    cd ai-engineering-projects
    ```
 
@@ -210,19 +210,14 @@ Built with amazing tools and technologies:
 ## 📧 Contact
 
 Interested in my work or want to discuss AI Engineering?
-- **LinkedIn**: [Connect with me](https://linkedin.com/in/yourprofile)
-- **GitHub**: [View my profile](https://github.com/yourusername)
-- **Email**: your.email@example.com
+- **LinkedIn**: [Connect with me](https://www.linkedin.com/in/shakib-howlader/)
+- **GitHub**: [View my profile](https://github.com/mr-shakib)
+- **Email**: contactshakibhere@gmail.com
 
 ## 🗺️ Roadmap & Goals
 
 - [ ] Complete Hallucination-Resistant RAG System
-- [ ] Build Semantic Search Engine with advanced retrieval
-- [ ] Implement LLM Fine-tuning Pipeline (LoRA/QLoRA)
-- [ ] Add MLOps and deployment examples
-- [ ] Create Agent-based systems
-- [ ] Implement monitoring and observability
-- [ ] Add multimodal AI projects
+- [ ] More to be added
 
 ---
 
