@@ -21,6 +21,19 @@
             <p class="subtitle">Hallucination-Resistant RAG System</p>
         </header>
 
+        <div class="upload-section">
+            <form id="upload-form">
+                <input type="file" id="file-input" accept=".pdf">
+                <button type="submit" id="upload-btn">Upload PDF</button>
+                <button type="button" id="new-session-btn" style="display:none;">New Session</button>
+            </form>
+            <p id="upload-status">Upload a PDF to begin chatting.</p>
+            <div id="files-list" style="display:none;">
+                <h3>Uploaded Files:</h3>
+                <ul id="files-container"></ul>
+            </div>
+        </div>
+
         <div class="chat-container" id="chat-container">
             <div class="message bot-message">
                 <div class="message-content">
@@ -30,7 +43,7 @@
         </div>
 
         <div class="input-area">
-            <form id="chat-form">
+            <form id="chat-form" style="display: none;">
                 <input type="text" id="user-input" placeholder="Type your question here..." autocomplete="off">
                 <button type="submit" id="send-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

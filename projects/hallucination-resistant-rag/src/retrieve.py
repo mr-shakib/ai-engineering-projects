@@ -1,14 +1,27 @@
 import os
-
+import json
 import faiss
 import numpy as np
 
 
-def buildFaissIndex(embeddingFolder):
+def buildFaissIndex(embeddingFolder, index_dir=None):
     """
     Build a FAISS index from all .npy embeddings in the given folder.
-    Returns the index and a list of (fileName, chunkId) metadata.
+    Saves the index and metadata, or loads them if they already exist.
     """
+    if index_dir is None:
+        index_dir = embeddingFolder
+
+    index_file = os.path.join(index_dir, "faiss_index.bin")
+    metadata_file = os.path.join(index_dir, "metadata.json")
+
+    if os.path.exists(index_file) and os.path.exists(metadata_file):
+        print(f"Loading existing index from {index_dir}")
+        index = faiss.read_index(index_file)
+        with open(metadata_file, "r") as f:
+            metadata = json.load(f)
+        return index, metadata
+
     vectors = []
     metadata = []
 
@@ -27,12 +40,18 @@ def buildFaissIndex(embeddingFolder):
     if not vectors:
         raise ValueError("No embeddings found in embeddings folder!")
 
-    vectors = np.stack(vectors).astype("float32")  # ensures 2D array
+    vectors = np.stack(vectors).astype("float32")
     dim = vectors.shape[1]
 
     index = faiss.IndexFlatL2(dim)
     index.add(vectors)
     print(f"Index built with {index.ntotal} vectors")
+
+    # Save the index and metadata
+    faiss.write_index(index, index_file)
+    with open(metadata_file, "w") as f:
+        json.dump(metadata, f)
+
     return index, metadata
 
 

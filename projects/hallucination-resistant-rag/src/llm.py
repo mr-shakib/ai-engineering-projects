@@ -38,12 +38,36 @@ def get_dynamic_refusal(question=None):
     return f"{base} (Question: “{question}”)" if question else base
 
 # =========================
+# Fallback Answer Generator (No LLM)
+# =========================
+
+def generateAnswerFallback(contextChunks, question):
+    """
+    Fallback answer generator that works without LLM API.
+    Returns the retrieved context with source citations.
+    """
+    if not contextChunks:
+        return get_dynamic_refusal(question)
+    
+    answer = f"Answer based on retrieved context:\n\n"
+    
+    for chunk in contextChunks:
+        answer += f"### Retrieved Information:\n"
+        answer += f"--- {chunk['id']} ---\n"
+        answer += f"{chunk['text'].strip()}\n\n"
+    
+    answer += f"\nSystem Note: The above information was retrieved from the uploaded documents and is relevant to your question: '{question}'"
+    
+    return answer
+
+# =========================
 # Main Answer Generator
 # =========================
 
 def generateAnswer(contextChunks, question):
     """
     Gemini-compatible, chat-friendly, hallucination-safe answer generator
+    with fallback support when API fails.
     """
 
     # ---- HARD SAFETY GATE ----
@@ -88,29 +112,35 @@ Answer:
         }
     }
 
-    response = requests.post(
-        GEMINI_URL,
-        headers={
-            "Content-Type": "application/json",
-            "x-goog-api-key": GEMINI_API_KEY
-        },
-        json=payload
-    )
-
-    if response.status_code != 200:
-        raise Exception(
-            f"Gemini API error {response.status_code}: {response.text}"
+    try:
+        response = requests.post(
+            GEMINI_URL,
+            headers={
+                "Content-Type": "application/json",
+                "x-goog-api-key": GEMINI_API_KEY
+            },
+            json=payload,
+            timeout=10
         )
 
-    data = response.json()
+        if response.status_code != 200:
+            print(f"⚠️ Gemini API error {response.status_code}, using fallback")
+            return generateAnswerFallback(contextChunks, question)
 
-    try:
-        answer_text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
-    except (KeyError, IndexError):
-        return get_dynamic_refusal(question)
+        data = response.json()
 
-    # ---- Final Safety Net ----
-    if not answer_text:
-        return get_dynamic_refusal(question)
+        try:
+            answer_text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        except (KeyError, IndexError):
+            print("⚠️ Gemini response parsing failed, using fallback")
+            return generateAnswerFallback(contextChunks, question)
 
-    return answer_text
+        # ---- Final Safety Net ----
+        if not answer_text:
+            return get_dynamic_refusal(question)
+
+        return answer_text
+    
+    except Exception as e:
+        print(f"⚠️ Gemini API exception: {str(e)}, using fallback")
+        return generateAnswerFallback(contextChunks, question)

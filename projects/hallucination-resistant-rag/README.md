@@ -147,16 +147,10 @@ pip install -r requirements.txt
 conda install -c conda-forge faiss-cpu
 ```
 
-### 3. Add Documents
+### 3. Configure LLM Access
 
-Place PDF or text files inside:
-
-```
-data/documents/
-```
-
----
-
+This system requires access to an LLM API (e.g., OpenAI, Anthropic, or local models).
+Configure your API keys in environment variables or `.env` file.
 
 ---
 
@@ -168,19 +162,87 @@ data/documents/
 python src/main.py "Your question here"
 ```
 
-### Option 2: Beautiful Web Interface 🌟
+### Option 2: Beautiful Web Interface with PDF Upload 🌟
+
+The web interface allows users to upload their own PDFs and ask questions based on those documents in real-time.
+
+#### Features:
+- 📤 **PDF Upload**: Upload single or multiple PDF files
+- 💬 **Interactive Q&A**: Ask questions about your uploaded documents
+- 🔄 **Session Management**: Add more PDFs to the same session or start fresh
+- 📁 **File Tracking**: View all uploaded files in the current session
+- 🎨 **Modern UI**: Glassmorphism design with dark mode
+- ⚡ **Real-time**: Instant processing with typing indicators
+- 🚫 **Hallucination-Resistant**: Explicit refusal when evidence is insufficient
+
+#### How to Use:
 
 1. **Start the API Backend:**
 
    ```bash
+   cd projects/hallucination-resistant-rag
    uvicorn src.api:app --reload
    ```
 
-2. **Open the App:**
+   The API will be available at `http://localhost:8000`
 
-   Open `web/index.html` in your browser.
+2. **Open the Web Interface:**
 
-   *Features: Dark mode, real-time typing indicators, and formatted source citations.*
+   Open `web/index.html` in your browser, or visit via a local server.
+
+3. **Upload Your PDF:**
+
+   - Click "Choose File" and select a PDF document
+   - Click "Upload PDF" to process the document
+   - Wait for confirmation that the file is ready
+
+4. **Ask Questions:**
+
+   - Type your question in the input field
+   - Press Enter or click the send button
+   - The AI will answer based ONLY on your uploaded PDF
+   - If the answer isn't found in your document, it will explicitly refuse
+
+5. **Upload Additional PDFs (Optional):**
+
+   - You can upload more PDFs to the same session
+   - All documents will be searchable together
+   - Click "New Session" to start fresh with different documents
+
+#### Example Workflow:
+
+```
+1. Upload: "company_report_2024.pdf"
+   → System processes and indexes the document
+
+2. Ask: "What was the revenue in Q3?"
+   → System retrieves relevant sections and answers
+
+3. Ask: "What is the CEO's favorite food?"
+   → System refuses (information not in document)
+
+4. Upload: "ceo_interview.pdf" (adds to same session)
+   → Now both documents are searchable
+
+5. Ask previous question again
+   → May now answer if info is in new document
+```
+
+#### API Endpoints:
+
+- `POST /api/upload` - Upload a PDF file
+  - Optional: `?session_id=<id>` to add to existing session
+  - Returns: `session_id`, `file_path`, `file_name`, `files_in_session`
+
+- `POST /api/chat` - Ask a question
+  - Body: `{"question": "...", "session_id": "..."}`
+  - Returns: `{"response": "..."}`
+
+- `GET /api/session/{session_id}/files` - List files in a session
+  - Returns: List of uploaded file names
+
+- `DELETE /api/session/{session_id}` - Delete a session
+  - Removes all files and embeddings for that session
 
 
 ---

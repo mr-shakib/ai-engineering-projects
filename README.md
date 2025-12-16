@@ -46,15 +46,25 @@ ai-engineering-projects/
 ## 🚀 Projects
 
 ### 1. Hallucination-Resistant RAG System
-**Status:** ✅ Active Development
+**Status:** ✅ Active Development | 🎯 **NEW: PDF Upload & Q&A Feature**
 
 A sophisticated Retrieval-Augmented Generation system implementing:
-- Advanced chunking strategies
-- Embedding-based retrieval
-- Context-aware generation
-- Hallucination detection and mitigation
+- **PDF Upload Interface**: Users can upload their own PDFs and ask questions
+- **Multi-Document Support**: Search across multiple uploaded PDFs in one session
+- **Advanced chunking strategies** with overlap for context preservation
+- **Embedding-based retrieval** using Sentence Transformers
+- **Confidence-based decision gate** to prevent hallucinations
+- **Explicit refusal mechanism** when evidence is insufficient
+- **Modern web UI** with glassmorphism design and dark mode
 
-**Tech Stack:** Python, LangChain, ChromaDB, OpenAI API
+**Key Features:**
+- 📤 Upload single or multiple PDFs
+- 💬 Interactive Q&A on your documents
+- 🔄 Session management (add files or start fresh)
+- 🚫 Hallucination prevention through confidence scoring
+- 📚 Source attribution for every answer
+
+**Tech Stack:** Python, FastAPI, FAISS, SentenceTransformers, pdfplumber
 
 [View Project →](projects/hallucination-resistant-rag/)
 

@@ -17,13 +17,12 @@ def createEmbedding(text: str):
     return embedding
 
 
-def embedChunks(chunks, filename):
+def embedChunks(chunks, filename, embeddings_dir):
     """
     Generate embeddings for a list of text chunks.
-    Save each embedding as a .npy file in embeddings/<fileName>/
+    Save each embedding as a .npy file in the specified embeddings directory.
     """
-    embeddings_root = PROJECT_ROOT / "embeddings"
-    folderPath = embeddings_root / filename
+    folderPath = Path(embeddings_dir) / filename
     folderPath.mkdir(parents=True, exist_ok=True)
 
     for i, chunk in enumerate(chunks):
